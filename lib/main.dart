@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
             return Center(child: Text('Error: ${snapshot.error}}'));
           if (!snapshot.hasData) return Center(child: Text('Loading...'));
 
-          return Column(
+          return Stack(
             children: [
               StoreMap(
                 documents: snapshot.data.documents,
