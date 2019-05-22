@@ -62,20 +62,15 @@ class _HomePageState extends State<HomePage> {
 
           return Column(
             children: [
-              Flexible(
-                flex: 2,
-                child: StoreMap(
-                  documents: snapshot.data.documents,
-                  initialPosition: const LatLng(37.7786, -122.4375),
-                  mapController: _mapController,
-                ),
+              StoreMap(
+                documents: snapshot.data.documents,
+                initialPosition: const LatLng(37.7786, -122.4375),
+                mapController: _mapController,
               ),
-              Flexible(
-                  flex: 3,
-                  child: StoreList(
-                    documents: snapshot.data.documents,
-                    mapController: _mapController,
-                  )),
+              StoreCarousel(
+                documents: snapshot.data.documents,
+                mapController: _mapController,
+              ),
             ],
           );
         },
@@ -124,8 +119,8 @@ class StoreMap extends StatelessWidget {
   }
 }
 
-class StoreList extends StatelessWidget {
-  const StoreList({
+class StoreCarousel extends StatelessWidget {
+  const StoreCarousel({
     Key key,
     @required this.documents,
     @required this.mapController,
@@ -136,15 +131,34 @@ class StoreList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: documents.length,
-      itemBuilder: (builder, index) {
-        final document = documents[index];
-        return StoreListTile(
-          document: document,
-          mapController: mapController,
-        );
-      },
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: SizedBox(
+          height: 90,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: documents.length,
+            itemBuilder: (context, index) {
+              return SizedBox(
+                width: 340,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Card(
+                    child: Center(
+                      child: StoreListTile(
+                        document: documents[index],
+                        mapController: mapController,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 }
@@ -199,8 +213,9 @@ class _StoreListTileState extends State<StoreListTile> {
       subtitle: Text(widget.document['address']),
       leading: Container(
         child: _placePhotoUrl.isNotEmpty
-            ? CircleAvatar(
-                backgroundImage: NetworkImage(_placePhotoUrl),
+            ? ClipRRect(
+                child: Image.network(_placePhotoUrl, fit: BoxFit.cover),
+                borderRadius: const BorderRadius.all(Radius.circular(2)),
               )
             : Container(),
         width: 60,
